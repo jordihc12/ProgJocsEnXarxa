@@ -1,21 +1,14 @@
 #include <iostream>
 #include <SFML/Network.hpp>
+#include <thread>
 
-int main()
+void RecieveMessage(sf::TcpSocket* sock, bool* end)
 {
-	sf::TcpSocket sock;
-	sf::Socket::Status status = sock.connect("localhost", 50000);
-	if (status != sf::Socket::Status::Done)
-	{
-		//Not connected
-	}
-
-	bool end = false;
-
+	sf::Socket::Status status;
 	do
 	{
 		sf::Packet pack;
-		status = sock.receive(pack);
+		status = sock->receive(pack);
 
 		std::string str;
 
@@ -26,12 +19,38 @@ int main()
 			std::cout << str << std::endl;
 			break;
 		case sf::Socket::Disconnected:
-			end = true;
+			*end = true;
 			break;
 		default:
 			break;
 		}
-	} while (!end);
+	} while (!(*end));
+}
+
+int main()
+{
+	sf::TcpSocket sock;
+	sf::Socket::Status status = sock.connect("localhost", 50000);
+
+	bool end = false;
+
+	std::thread tSend(RecieveMessage, &sock, &end);
+	tSend.detach();
+
+	std::string str;
+
+	do
+	{
+		std::cin >> str;
+		sf::Packet pack;
+		pack << str;
+		sock.send(pack);
+
+	} while (str != "e");
+
+	end = true;
+
+	sock.disconnect();
 
 	return 0;
 }
