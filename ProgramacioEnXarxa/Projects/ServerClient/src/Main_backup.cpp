@@ -1,4 +1,4 @@
-#include <iostream>
+/* #include <iostream>
 #include <SFML/Network.hpp>
 #include <vector>
 #include <thread>
@@ -38,7 +38,7 @@ void AcceptConnextions(std::vector<sf::TcpSocket*>* _clients, bool* _end)
 
 	sf::Socket::Status status = listener.listen(50000);
 
-	if (status != sf::Socket::Status::Done)
+	if (status != sf::Socket::Done)
 		return;
 
 	while (!(*_end))
@@ -119,4 +119,4 @@ int main()
 	end = true;
 
 	return 0;
-}
+} */
